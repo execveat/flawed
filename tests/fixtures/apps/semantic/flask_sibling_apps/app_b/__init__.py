@@ -1,0 +1,1 @@
+"""Sibling Flask app B."""

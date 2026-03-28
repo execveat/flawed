@@ -1,0 +1,6 @@
+{
+  "_comment": "FLAW-344 L1 schema lock. Do NOT hand-edit. Regenerate with `python -m tools.update_schema_lock` after a deliberate _index change. The quality gate (tools.check_l1_schema) fails when _index source changes without re-locking, preserving the anti-silent-FN guarantee that the old extraction_code_signature byte-hash provided at runtime.",
+  "l1_schema_version": "1",
+  "record_schema_fingerprint": "913f0190fc3be738",
+  "extraction_code_signature": "b5e70fa2294eabe41460a3d5d6792494419ef7898c335551dfcf84f019bc40ad"
+}

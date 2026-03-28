@@ -1,0 +1,88 @@
+"""Semantic layer providers -- framework/library knowledge plugins.
+
+Each provider teaches the Semantic Layer what a given framework or
+library means for security analysis.  Providers are mostly declarative:
+class-level tuples of frozen descriptors that map FQNs to semantic labels.
+
+Re-exports the provider base class and all DSL descriptor types.
+"""
+
+from __future__ import annotations
+
+from flawed._semantic.providers._base import (
+    CheckKind,
+    CheckRegistrationPattern,
+    ClaimContainerPattern,
+    ClassAttributeGuardPattern,
+    ClassViewPattern,
+    ControlPlaneExemptionPattern,
+    DependencyPattern,
+    DispatchPattern,
+    EffectAttributePattern,
+    EffectCallPattern,
+    EffectSubscriptPattern,
+    FlowPropagatorPattern,
+    HookType,
+    ImperativeRoutePattern,
+    InputAttributePattern,
+    InputContainerPattern,
+    InputFieldAccessPattern,
+    InputMethodPattern,
+    InputParameterPattern,
+    LifecycleDecoratorPattern,
+    LifecycleRegistrationPattern,
+    MiddlewareClassPattern,
+    Provider,
+    ProviderMeta,
+    RouteCallPattern,
+    RouteDecorator,
+    RouterGroupMountPattern,
+    RouterGroupPattern,
+    SafeGeneratedURLPattern,
+    SecurityCheckPattern,
+    StateProxyPattern,
+    TaintSinkPattern,
+    ValidatedValueGuardPattern,
+    WhenPredicate,
+    arg,
+    kwarg,
+)
+
+__all__ = [
+    "CheckKind",
+    "CheckRegistrationPattern",
+    "ClaimContainerPattern",
+    "ClassAttributeGuardPattern",
+    "ClassViewPattern",
+    "ControlPlaneExemptionPattern",
+    "DependencyPattern",
+    "DispatchPattern",
+    "EffectAttributePattern",
+    "EffectCallPattern",
+    "EffectSubscriptPattern",
+    "FlowPropagatorPattern",
+    "HookType",
+    "ImperativeRoutePattern",
+    "InputAttributePattern",
+    "InputContainerPattern",
+    "InputFieldAccessPattern",
+    "InputMethodPattern",
+    "InputParameterPattern",
+    "LifecycleDecoratorPattern",
+    "LifecycleRegistrationPattern",
+    "MiddlewareClassPattern",
+    "Provider",
+    "ProviderMeta",
+    "RouteCallPattern",
+    "RouteDecorator",
+    "RouterGroupMountPattern",
+    "RouterGroupPattern",
+    "SafeGeneratedURLPattern",
+    "SecurityCheckPattern",
+    "StateProxyPattern",
+    "TaintSinkPattern",
+    "ValidatedValueGuardPattern",
+    "WhenPredicate",
+    "arg",
+    "kwarg",
+]

@@ -1,0 +1,366 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "flawed"
+version = "0.6.0"
+description = "Static analysis engine for Python web applications"
+requires-python = ">=3.12"
+license = "Apache-2.0"
+readme = "README.md"
+keywords = ["static-analysis", "flask", "web"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Environment :: Console",
+  "Intended Audience :: Developers",
+  "Intended Audience :: Information Technology",
+  "Intended Audience :: Science/Research",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Scientific/Engineering :: Information Analysis",
+  "Topic :: Software Development :: Quality Assurance",
+  "Typing :: Typed",
+]
+dependencies = [
+  "astroid>=3.0",
+  "basedpyright>=1.0",
+  "click>=8.1",
+  "jinja2>=3.1",
+  "libcst>=1.0",
+  "pathspec>=0.12",
+  "pyyaml>=6.0",
+  "rich>=13.0",
+]
+
+# ribrarian: optional private integration, reached via the guarded import in
+# src/flawed/_cli/ribrarian_bridge.py (not published).
+
+[dependency-groups]
+dev = [
+  "pytest>=8.0",
+  "pytest-testmon>=2.1",
+  "pytest-json-report>=1.5",
+  "mypy>=1.10",
+  "ruff>=0.8",
+  "import-linter>=2.1",
+  "types-PyYAML>=6.0",
+]
+
+[project.scripts]
+flawed = "flawed._cli:main"
+
+[project.urls]
+Homepage = "https://github.com/execveat/flawed"
+Repository = "https://github.com/execveat/flawed"
+Issues = "https://github.com/execveat/flawed/issues"
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/flawed"]
+
+[tool.hatch.build.targets.sdist]
+# Ship only the package and release docs; the working tree carries large test
+# fixtures and dev-only dirs that don't belong in the archive.
+include = ["src/flawed", "/README.md", "/CHANGELOG.md", "/LICENSE"]
+
+[tool.flawed]
+# Seconds `mise run test` waits for the per-checkout pytest lock that serializes
+# pytest runs so concurrent ones don't corrupt testmon's .testmondata.
+test_lock_timeout_seconds = 5
+
+# --- Type checking ---
+
+[tool.basedpyright]
+# basedpyright serves two roles: the L1 type oracle (which writes its own probe
+# config, unaffected by this section) and the _rules type-erasure GATE (FLAW-262).
+# The gate runs `basedpyright src/flawed/_rules` via tools/quality.py and treats
+# getattr->Any / Unknown erasure as ERRORS — the failure class mypy-strict is
+# structurally blind to (it has no reportAny). Whole-repo basedpyright stays
+# advisory (a separate job).
+include = ["src", "tools", "tests"]
+# Repo-wide noise that is not erasure and carries no FN-relevant signal:
+reportImplicitStringConcatenation = false
+reportUnusedCallResult = false
+reportImplicitOverride = false
+reportUnannotatedClassAttribute = false
+reportMissingTypeStubs = false
+reportImportCycles = false
+
+# The _rules layer is gated: type erasure is an ERROR here, scoped via an
+# execution environment so whole-repo runs stay advisory.
+[[tool.basedpyright.executionEnvironments]]
+root = "src/flawed/_rules"
+reportAny = "error"
+reportUnknownArgumentType = "error"
+reportUnknownLambdaType = "error"
+reportUnknownMemberType = "error"
+reportUnknownParameterType = "error"
+reportUnknownVariableType = "error"
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+disallow_any_generics = true
+disallow_subclassing_any = true
+extra_checks = true
+explicit_package_bases = true
+mypy_path = "src"
+# tests/fixtures/apps/** are deliberately-malformed SAMPLE target apps that flawed
+# ANALYZES as files (test data), not code we import or type. They import uninstalled
+# frameworks (flask, sqlalchemy, ...) by design; excluding them is what removes the
+# bulk of the spurious import-not-found noise from `mypy tests/`.
+exclude = ['^tests/fixtures/apps/']
+
+[[tool.mypy.overrides]]
+module = ["astroid", "astroid.*"]
+ignore_missing_imports = true
+
+# ribrarian is optional; the bridge guards its import, so mypy stays clean with
+# or without it installed.
+[[tool.mypy.overrides]]
+module = ["ribrarian"]
+ignore_missing_imports = true
+
+# The _rules_smoke pack is a throwaway prototype set (FLAW-136/FLAW-176) used only for
+# smoke coverage; it is not shipped engine surface and stays exempt from strict typing.
+[[tool.mypy.overrides]]
+module = ["flawed._rules_smoke.*"]
+ignore_errors = true
+
+# Tests are type-checked, but the annotation tax is dropped — `check_untyped_defs`
+# stays on (inherited true), so every test BODY is still fully analyzed for the
+# bugs that bite: attribute access on a `X | None`, wrong-typed arguments,
+# `in`/index on an optional, unreachable asserts.
+[[tool.mypy.overrides]]
+module = ["tests.*"]
+disallow_untyped_defs = false
+disallow_incomplete_defs = false
+disallow_untyped_decorators = false
+disallow_untyped_calls = false
+warn_return_any = false
+disallow_any_generics = false
+
+
+# --- Linting ---
+
+[tool.ruff]
+target-version = "py312"
+line-length = 99
+src = ["src", "tests", "tools"]
+
+[tool.ruff.lint]
+select = [
+  "F",    # pyflakes
+  "E",
+  "W",    # pycodestyle
+  "I",    # isort
+  "N",    # pep8-naming
+  "UP",   # pyupgrade
+  "ANN",  # flake8-annotations
+  "B",    # flake8-bugbear
+  "A",    # flake8-builtins
+  "COM",  # flake8-commas
+  "C4",   # flake8-comprehensions
+  "DTZ",  # flake8-datetimez
+  "T10",  # flake8-debugger
+  "FA",   # flake8-future-annotations
+  "ISC",  # flake8-implicit-str-concat
+  "ICN",  # flake8-import-conventions
+  "PIE",  # flake8-pie
+  "PT",   # flake8-pytest-style
+  "RSE",  # flake8-raise
+  "RET",  # flake8-return
+  "SLF",  # flake8-self
+  "SIM",  # flake8-simplify
+  "TCH",  # flake8-type-checking
+  "ARG",  # flake8-unused-arguments
+  "PTH",  # flake8-use-pathlib
+  "PL",   # pylint
+  "TRY",  # tryceratops
+  "FLY",  # flynt
+  "PERF", # perflint
+  "FURB", # refurb
+  "RUF",  # ruff-specific
+]
+ignore = [
+  "COM812",  # trailing comma (conflicts with formatter)
+  "ISC001",  # implicit string concat (conflicts with formatter)
+  "PLC0415", # import not at top-level (deliberate deferred imports for layering)
+  "PLR0913", # too many arguments (complex constructors by design)
+  "PLR2004", # magic value comparison (too noisy for tests)
+  "TRY003",  # long exception messages (acceptable in domain code)
+  "UP046",   # Generic[T] syntax (keep explicit for clarity with complex generics)
+]
+
+[tool.ruff.lint.per-file-ignores]
+"src/flawed/_index/_structural.py" = [
+  "N802",   # LibCST visitor methods must be named visit_FunctionDef etc.
+  "ARG002", # LibCST visitor methods receive unused node arguments
+]
+"src/flawed/_index/_cfg.py" = [
+  "N802",   # LibCST visitor methods must be named visit_FunctionDef etc.
+  "ARG002", # LibCST visitor methods receive unused node arguments
+]
+# Rule DSL files favor readability: ARG/E501/PLR0912 etc. relaxed, but F401/F821
+# and ANN stay enforced since these ship as first-class executable code that can
+# harbor real bugs (FLAW-159, FLAW-258).
+"src/flawed/_rules/**/*.py" = [
+  "ARG",     # helper predicates take unused args to mirror the rule DSL shape
+  "C401",    # generator vs comprehension style left to rule-author preference
+  "E501",    # line length relaxed for readable rule prose
+  "PERF401", # readability over micro-optimization in rules
+  "PLR0912", # complex detection rules may have many branches
+  "RUF100",  # unused noqa from formatter interaction
+  "SIM102",  # nested ifs acceptable for clarity in rules
+]
+"src/flawed/_rules_smoke/**/*.py" = [
+  "ANN",
+  "ARG",
+  "C401",
+  "E501",
+  "F401",
+  "F821",
+  "PERF401",
+  "PLR0912",
+  "RUF100",
+  "SIM102",
+]
+"tests/**/*.py" = [
+  "ANN",     # no annotation enforcement in tests
+  "ARG",     # unused arguments common in fixtures
+  "SLF001",  # private access acceptable in tests
+  "PLR2004", # magic values fine in tests
+  "PT011",   # broad pytest.raises acceptable in spec tests
+  "PT018",   # compound assertions acceptable in spec tests
+  "C416",    # list comprehension style in spec tests
+]
+"tests/fixtures/**/*.py" = [
+  "ALL", # fixtures are intentional code samples, not production code
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["flawed", "tools"]
+
+[tool.ruff.lint.flake8-annotations]
+allow-star-arg-any = true
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+docstring-code-format = true
+
+# --- Testing ---
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+strict_markers = true
+xfail_strict = true
+markers = ["slow: marks test as legitimately slow, exempt from timing guard"]
+# tools/quality.py is the SOLE pytest invoker and owns the testmon flag, the json
+# report, and slow-tier deselection; keeping those out of addopts avoids a second
+# place defining test behavior.
+addopts = ["--strict-config", "--tb=short"]
+
+# --- Architecture enforcement ---
+
+[tool.importlinter]
+root_packages = ["flawed"]
+
+[[tool.importlinter.contracts]]
+name = "Layer 1 (index) has no upward dependencies"
+type = "forbidden"
+source_modules = ["flawed._index"]
+forbidden_modules = ["flawed._semantic"]
+
+[[tool.importlinter.contracts]]
+name = "Layer 1 (index) does not import Rule API types"
+type = "forbidden"
+source_modules = ["flawed._index"]
+forbidden_modules = [
+  "flawed.calls",
+  "flawed.checks",
+  "flawed.class_",
+  "flawed.collections",
+  "flawed.conditions",
+  "flawed.core",
+  "flawed.detector",
+  "flawed.effects",
+  "flawed.evidence",
+  "flawed.flow",
+  "flawed.function",
+  "flawed.inputs",
+  "flawed.repo",
+  "flawed.route",
+  "flawed.scopes",
+]
+
+[[tool.importlinter.contracts]]
+name = "Rule API cannot reach index directly (must go through semantic layer)"
+type = "forbidden"
+source_modules = [
+  "flawed.calls",
+  "flawed.checks",
+  "flawed.class_",
+  "flawed.collections",
+  "flawed.conditions",
+  "flawed.core",
+  "flawed.detector",
+  "flawed.effects",
+  "flawed.evidence",
+  "flawed.flow",
+  "flawed.function",
+  "flawed.inputs",
+  "flawed.repo",
+  "flawed.route",
+  "flawed.scopes",
+]
+forbidden_modules = ["flawed._index"]
+
+[[tool.importlinter.contracts]]
+name = "Config does not depend on analysis layers"
+type = "forbidden"
+source_modules = ["flawed._config"]
+forbidden_modules = ["flawed._index", "flawed._semantic"]
+
+[[tool.importlinter.contracts]]
+name = "Layer 2 (semantic) does not import Rule API orchestration"
+type = "forbidden"
+source_modules = ["flawed._semantic"]
+forbidden_modules = [
+  "flawed.collections",
+  "flawed.detector",
+  "flawed.evidence",
+  "flawed.repo",
+  "flawed.scopes",
+]
+# Allow transitive chains from permitted L3 domain type modules to
+# forbidden orchestration modules.  L2 MAY import domain types (frozen
+# dataclasses, enums) from L3, and those types have TYPE_CHECKING-only
+# imports of orchestration modules for their own annotation needs.
+# These ignore rules allow the transitive chains without weakening the
+# direct prohibition on L2 importing orchestration modules.
+ignore_imports = [
+  "flawed.blueprint -> flawed.collections",
+  "flawed.class_ -> flawed.collections",
+  "flawed.function -> flawed.collections",
+  "flawed.function -> flawed.scopes",
+  "flawed.route -> flawed.evidence",
+  "flawed.route -> flawed.scopes",
+  "flawed.collections -> flawed.conditions",
+]

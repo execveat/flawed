@@ -1,0 +1,165 @@
+[tools]
+uv = "latest"
+
+[settings]
+experimental = true
+idiomatic_version_file_enable_tools = ["python"]
+
+# The uv venv is deliberately NOT auto-activated, so a bare `flawed` resolves to
+# the stable global install; reach live source via `dev-flawed` or `mise run flawed`.
+
+[env]
+_.path = ["bin"]
+
+[deps.uv]
+auto = true
+
+# ---------------------------------------------------------------------------
+# Core tasks: test, check, fix
+# ---------------------------------------------------------------------------
+
+# tools/quality.py is the SINGLE owner of the quality gate (the check-set as
+# data, plus all output handling). These tasks are thin callers — no check logic
+# lives here. See tools/quality.py.
+
+[tasks.test]
+description = "Run tests only (pytest+testmon). Scoped: mise run test -- tests/unit/x.py. Add -- --all for @slow."
+run = "bash -c 'uv run python -m tools.quality --tests-only \"$@\"' -- "
+
+[tasks.check]
+description = "Full quality gate (lint+format+types+layers+checks+tests). No args = full; with paths = scoped."
+run = "bash -c 'uv run python -m tools.quality \"$@\"' -- "
+
+[tasks.test-report]
+description = "Print last test results instantly (no re-run). Add -- --full for failures."
+run = "uv run python -m tools.test_report"
+
+[tasks.test-profile]
+description = "Per-test timing breakdown from .testmondata (tier/longest/spawners; no re-run)."
+run = "uv run python -m tools.test_profile"
+
+[tasks.flawed]
+description = "Run the LIVE engine in-repo (editable source). E.g. mise run flawed -- scan path/"
+run = "bash -c 'uv run flawed \"$@\"' -- "
+
+[tasks.fix]
+description = "Auto-fix lint+format without the full gate (inner-loop convenience)."
+run = "bash -c 'uv run python -m tools.quality --format-only \"$@\"' -- "
+
+[tasks.repair-env]
+description = "Delete and recreate the uv environment"
+run = ["rm -rf .venv", "mise deps --force"]
+
+[tasks.install-hooks]
+description = "Install the version-controlled git pre-commit hook (idempotent)"
+run = '''
+#!/usr/bin/env bash
+set -euo pipefail
+cd "${MISE_PROJECT_ROOT:-$(git rev-parse --show-toplevel)}"
+SRC="tools/hooks/pre-commit"
+# --git-path resolves to the shared common hooks dir, so the hook installs
+# correctly whether invoked from the main checkout or a linked worktree.
+HOOK_DIR="$(git rev-parse --git-path hooks)"
+mkdir -p "$HOOK_DIR"
+install -m 0755 "$SRC" "$HOOK_DIR/pre-commit"
+echo "Installed pre-commit hook: $SRC -> $HOOK_DIR/pre-commit"
+'''
+
+# ---------------------------------------------------------------------------
+# Global install: the stable, version-pinned `flawed` command
+# ---------------------------------------------------------------------------
+
+# Installs/upgrades the global `flawed` from a pushed origin/main commit (never
+# local WIP), via a standalone managed Python, into ~/.local/bin.
+#
+#   mise run install-global                    # refuse if dirty or HEAD != origin/main
+#   mise run install-global -- --allow-dirty   # bypass the sanity gate (local testing)
+[tasks.install-global]
+description = "Install/upgrade the global `flawed` from origin/main. Pass -- --allow-dirty to bypass the clean-tree gate."
+run = '''
+#!/usr/bin/env bash
+set -euo pipefail
+cd "${MISE_PROJECT_ROOT:-$(git rev-parse --show-toplevel)}"
+SECONDS=0
+
+allow_dirty=0
+for arg in "$@"; do
+  case "$arg" in
+    --allow-dirty) allow_dirty=1 ;;
+    *) echo "[install-global] unknown argument: $arg" >&2; exit 2 ;;
+  esac
+done
+
+if [[ "$allow_dirty" -eq 0 ]]; then
+  # The global build must equal a real published commit, never local WIP.
+  if ! git diff --quiet || ! git diff --cached --quiet; then
+    echo "[install-global] REFUSED: working tree is dirty." >&2
+    echo "  Commit or stash your changes, or pass -- --allow-dirty to bypass." >&2
+    exit 1
+  fi
+  git fetch --quiet origin main
+  head="$(git rev-parse HEAD)"
+  origin="$(git rev-parse origin/main)"
+  if [[ "$head" != "$origin" ]]; then
+    echo "[install-global] REFUSED: HEAD is not pushed to origin/main." >&2
+    echo "  HEAD       = $head" >&2
+    echo "  origin/main= $origin" >&2
+    echo "  Push your commit first, or pass -- --allow-dirty to bypass." >&2
+    exit 1
+  fi
+fi
+
+# The package's console script is `flawed`, so uv installs `~/.local/bin/flawed`
+# naturally — no symlink needed.
+uv tool install --force --managed-python --python 3.12 \
+  "flawed @ git+https://github.com/execveat/flawed@main"
+
+# Post-install verification from a neutral directory (avoids resolving an
+# in-repo editable script). A freshly-written ~/.local/bin binary may not be
+# visible to the CURRENT shell until `hash -r` or a new shell.
+echo ""
+echo "[install-global] verifying global binary from /tmp ..."
+( cd /tmp && "$HOME/.local/bin/flawed" version )
+echo "[install-global] bare 'flawed' currently resolves to: $(command -v flawed || echo '<not on PATH>')"
+echo "[install-global] NOTE: if your current shell still resolves an old"
+echo "  'flawed', run 'hash -r' (or open a new shell) to pick up ~/.local/bin."
+echo ""
+echo "[install-global] Completed in ${SECONDS}s"
+'''
+
+# ---------------------------------------------------------------------------
+# Upgrade dependencies
+# ---------------------------------------------------------------------------
+
+[tasks.upgrade-deps]
+description = "Upgrade Python dependencies and commit uv.lock"
+run = '''
+#!/usr/bin/env bash
+set -euo pipefail
+
+cd "$MISE_PROJECT_ROOT"
+
+if ! git diff --quiet || ! git diff --cached --quiet; then
+  echo "Working tree is dirty. Commit or stash changes first."
+  exit 1
+fi
+
+uv lock --upgrade
+mise deps install uv
+
+if git diff --quiet -- uv.lock; then
+  echo "uv.lock unchanged."
+  exit 0
+fi
+
+git add uv.lock
+git commit -m "Update Python dependencies"
+'''
+
+# ---------------------------------------------------------------------------
+# Performance harness
+# ---------------------------------------------------------------------------
+
+[tasks.stress]
+description = "Run memory stress harness. Usage: mise run stress [-- --scales quick]"
+run = "bash -c 'SECONDS=0; uv run python -m tools.stress \"$@\"; E=$?; echo \"\n[stress] Completed in ${SECONDS}s (exit $E)\"; exit $E' -- "
