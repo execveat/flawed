@@ -1,0 +1,1 @@
+{"application_order": 0, "args": [], "fqn": "abc.abstractmethod", "kwargs": [], "location": {"column": 4, "end_column": 19, "end_line": 36, "file": "models.py", "line": 36}, "name": "abstractmethod", "provenance": {"artifact": "models.py", "producer": "structural_entity_pass", "producer_version": "0.1.0"}, "target_fqn": "models.Serializable.to_dict"}

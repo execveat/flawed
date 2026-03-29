@@ -1,0 +1,1 @@
+{"aliases": [], "is_conditional": false, "is_from_import": true, "is_relative": false, "location": {"column": 0, "end_column": 34, "end_line": 8, "file": "app.py", "line": 8}, "module": "flask", "names": ["Blueprint", "Flask"], "provenance": {"artifact": "app.py", "producer": "structural_entity_pass", "producer_version": "0.1.0"}}

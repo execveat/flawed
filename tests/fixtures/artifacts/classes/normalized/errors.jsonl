@@ -1,0 +1,1 @@
+{"aborts_pipeline": false, "error_kind": "basedpyright", "file": "models.py", "is_fatal": false, "location": {"column": 8, "end_column": 17, "end_line": 24, "file": "models.py", "line": 24}, "message": "basedpyright returned imprecise type 'Unknown' for 'self.name'", "pass_name": "basedpyright_type_enrichment"}

@@ -1,0 +1,1 @@
+{"aborts_pipeline": false, "error_kind": "basedpyright", "file": "main.py", "is_fatal": false, "location": {"column": 4, "end_column": 13, "end_line": 16, "file": "main.py", "line": 16}, "message": "basedpyright returned imprecise type '(x: Unknown) -> Unknown' for 'transform'", "pass_name": "basedpyright_type_enrichment"}

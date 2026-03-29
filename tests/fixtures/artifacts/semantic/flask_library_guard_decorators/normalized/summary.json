@@ -1,0 +1,17 @@
+{
+  "attributes": 14,
+  "call_edges": 19,
+  "cfgs": 7,
+  "classes": 2,
+  "decorators": 9,
+  "errors": 9,
+  "fatal_errors": 0,
+  "functions": 7,
+  "imports": 3,
+  "l1_schema_version": "1",
+  "pipeline_version": "0.6.0",
+  "record_schema_fingerprint": "913f0190fc3be738",
+  "symbol_refs": 20,
+  "type_enrichment_facts": 10,
+  "value_flow_edges": 61
+}

@@ -1,0 +1,1 @@
+{"aborts_pipeline": false, "error_kind": "basedpyright", "file": "auth.py", "is_fatal": false, "location": {"column": 4, "end_column": 6, "end_line": 13, "file": "auth.py", "line": 13}, "message": "basedpyright returned imprecise type 'Unknown' for 'ph'", "pass_name": "basedpyright_type_enrichment"}

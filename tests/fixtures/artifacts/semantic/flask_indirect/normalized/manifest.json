@@ -1,0 +1,107 @@
+{
+  "cfg_count": 27,
+  "cfg_persistence": "written",
+  "deferred_artifacts": [
+    {
+      "path": "aliases.jsonl",
+      "producer": "structural_entity_pass",
+      "reason": "Alias facts currently feed value-flow construction; public persistence is deferred to the symbol-resolution baseline.",
+      "status": "internal_only"
+    },
+    {
+      "path": "assignments.jsonl",
+      "producer": "structural_entity_pass",
+      "reason": "Assignment facts currently feed value-flow construction; public persistence is deferred until assignment fact scope is finalized.",
+      "status": "internal_only"
+    },
+    {
+      "path": "type_enrichment.jsonl",
+      "producer": "type_enrichment",
+      "reason": "Type-enrichment facts persisted as JSONL for cache-hit recovery. Cache identity includes a type_enrichment_signature so stale facts are invalidated when oracle versions or configuration change.",
+      "status": "written"
+    },
+    {
+      "path": "locations.jsonl",
+      "producer": "all_passes",
+      "reason": "Source spans are embedded on each persisted fact; there is no standalone location index in the current runtime.",
+      "status": "embedded"
+    }
+  ],
+  "producer": "pipeline",
+  "producer_version": "0.6.0",
+  "schema_version": 1,
+  "written_artifacts": [
+    {
+      "description": "Function and method definitions.",
+      "path": "functions.jsonl",
+      "record_count": 27,
+      "status": "written"
+    },
+    {
+      "description": "Class definitions with currently available structural fields.",
+      "path": "classes.jsonl",
+      "record_count": 0,
+      "status": "written"
+    },
+    {
+      "description": "Decorator applications without semantic classification.",
+      "path": "decorators.jsonl",
+      "record_count": 14,
+      "status": "written"
+    },
+    {
+      "description": "Import statements and syntactic aliases.",
+      "path": "imports.jsonl",
+      "record_count": 7,
+      "status": "written"
+    },
+    {
+      "description": "Current attribute-access observations.",
+      "path": "attributes.jsonl",
+      "record_count": 58,
+      "status": "written"
+    },
+    {
+      "description": "Merged call edges from AST and hierarchy sources.",
+      "path": "call_edges.jsonl",
+      "record_count": 66,
+      "status": "written"
+    },
+    {
+      "description": "Current intra-function value-flow edges.",
+      "path": "value_flow_edges.jsonl",
+      "record_count": 187,
+      "status": "written"
+    },
+    {
+      "description": "Resolved symbol references from the structural pass.",
+      "path": "symbol_refs.jsonl",
+      "record_count": 78,
+      "status": "written"
+    },
+    {
+      "description": "Fatal and non-fatal extraction errors.",
+      "path": "errors.jsonl",
+      "record_count": 28,
+      "status": "written"
+    },
+    {
+      "description": "Declared-type facts from type-enrichment probes.",
+      "path": "type_enrichment.jsonl",
+      "record_count": 28,
+      "status": "written"
+    },
+    {
+      "description": "Per-function control-flow graphs (blocks, edges, try-regions) so cached loads retain CFG-derived conditions()/predicates() facts.",
+      "path": "cfgs.jsonl",
+      "record_count": 27,
+      "status": "written"
+    },
+    {
+      "description": "Aggregate artifact counts.",
+      "path": "summary.json",
+      "record_count": 1,
+      "status": "written"
+    }
+  ]
+}

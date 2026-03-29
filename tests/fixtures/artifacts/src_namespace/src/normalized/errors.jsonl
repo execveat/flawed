@@ -1,0 +1,1 @@
+{"aborts_pipeline": false, "error_kind": "basedpyright", "file": "app.py", "is_fatal": false, "location": {"column": 4, "end_column": 8, "end_line": 17, "file": "app.py", "line": 17}, "message": "basedpyright returned imprecise type 'Unknown' for 'user'", "pass_name": "basedpyright_type_enrichment"}

@@ -1,0 +1,1 @@
+{"containing_function_fqn": null, "declared_type": "Literal['world']", "expression": "greeting", "is_concrete": true, "location": {"column": 0, "end_column": 8, "end_line": 8, "file": "app.py", "line": 8}, "provenance": {"artifact": "app.py", "producer": "basedpyright_type_enrichment", "producer_version": "0.3.0"}, "source_tool": "basedpyright"}

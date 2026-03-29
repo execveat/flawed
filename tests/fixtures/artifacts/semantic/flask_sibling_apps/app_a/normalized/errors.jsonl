@@ -1,0 +1,1 @@
+{"aborts_pipeline": false, "error_kind": "basedpyright", "file": "routes.py", "is_fatal": false, "location": {"column": 0, "end_column": 2, "end_line": 3, "file": "routes.py", "line": 3}, "message": "basedpyright returned imprecise type 'Unknown' for 'bp'", "pass_name": "basedpyright_type_enrichment"}

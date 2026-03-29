@@ -1,0 +1,1 @@
+{"application_order": 0, "args": ["[\"GET\"]"], "fqn": "rest_framework.decorators.api_view", "kwargs": [], "location": {"column": 0, "end_column": 18, "end_line": 47, "file": "views.py", "line": 47}, "name": "api_view", "provenance": {"artifact": "views.py", "producer": "structural_entity_pass", "producer_version": "0.1.0"}, "target_fqn": "drf_basic.views.decorated_status"}

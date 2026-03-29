@@ -1,0 +1,1 @@
+{"application_order": 0, "args": ["\"/users/<int:user_id>\""], "fqn": "flask_restx_api.app.ns.route", "kwargs": [], "location": {"column": 0, "end_column": 33, "end_line": 22, "file": "app.py", "line": 22}, "name": "ns.route", "provenance": {"artifact": "app.py", "producer": "structural_entity_pass", "producer_version": "0.1.0"}, "target_fqn": "flask_restx_api.app.UserResource"}

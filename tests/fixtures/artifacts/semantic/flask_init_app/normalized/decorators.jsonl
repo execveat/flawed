@@ -1,0 +1,1 @@
+{"application_order": 0, "args": ["\"/\""], "fqn": "flask_init_app.app.app.route", "kwargs": [], "location": {"column": 0, "end_column": 15, "end_line": 20, "file": "app.py", "line": 20}, "name": "app.route", "provenance": {"artifact": "app.py", "producer": "structural_entity_pass", "producer_version": "0.1.0"}, "target_fqn": "flask_init_app.app.index"}

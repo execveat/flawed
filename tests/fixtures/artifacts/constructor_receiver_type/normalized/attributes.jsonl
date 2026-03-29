@@ -1,0 +1,1 @@
+{"access_kind": "attr", "attr_name": "verify", "containing_function_fqn": "auth.login", "is_write": false, "location": {"column": 4, "end_column": 13, "end_line": 14, "file": "auth.py", "line": 14}, "provenance": {"artifact": "auth.py", "producer": "structural_entity_pass", "producer_version": "0.1.0"}, "target_expr": "ph", "value_expr": null}

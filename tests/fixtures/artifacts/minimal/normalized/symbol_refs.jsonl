@@ -1,0 +1,1 @@
+{"fqn": "app.hello", "location": {"column": 11, "end_column": 16, "end_line": 8, "file": "app.py", "line": 8}, "name": "hello", "provenance": {"artifact": "app.py", "producer": "structural_entity_pass", "producer_version": "0.1.0"}, "resolution": "resolved"}

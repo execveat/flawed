@@ -1,0 +1,1 @@
+{"access_kind": "attr", "attr_name": "upper", "containing_function_fqn": "main.with_lambda", "is_write": false, "location": {"column": 26, "end_column": 33, "end_line": 16, "file": "main.py", "line": 16}, "provenance": {"artifact": "main.py", "producer": "structural_entity_pass", "producer_version": "0.1.0"}, "target_expr": "x", "value_expr": null}

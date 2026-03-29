@@ -1,0 +1,2 @@
+{"fqn": "abc.ABC", "location": {"column": 16, "end_column": 19, "end_line": 3, "file": "models.py", "line": 3}, "name": "ABC", "provenance": {"artifact": "models.py", "producer": "structural_entity_pass", "producer_version": "0.1.0"}, "resolution": "resolved"}
+{"fqn": "abc.abstractmethod", "location": {"column": 21, "end_column": 35, "end_line": 3, "file": "models.py", "line": 3}, "name": "abstractmethod", "provenance": {"artifact": "models.py", "producer": "structural_entity_pass", "producer_version": "0.1.0"}, "resolution": "resolved"}

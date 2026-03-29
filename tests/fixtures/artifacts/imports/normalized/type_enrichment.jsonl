@@ -1,0 +1,1 @@
+{"containing_function_fqn": "imports.main.run", "declared_type": "LiteralString", "expression": "result", "is_concrete": true, "location": {"column": 4, "end_column": 10, "end_line": 15, "file": "main.py", "line": 15}, "provenance": {"artifact": "main.py", "producer": "basedpyright_type_enrichment", "producer_version": "0.3.0"}, "source_tool": "basedpyright"}

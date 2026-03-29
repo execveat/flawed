@@ -1,0 +1,1 @@
+{"aliases": [], "is_conditional": false, "is_from_import": true, "is_relative": false, "location": {"column": 0, "end_column": 35, "end_line": 3, "file": "models.py", "line": 3}, "module": "abc", "names": ["ABC", "abstractmethod"], "provenance": {"artifact": "models.py", "producer": "structural_entity_pass", "producer_version": "0.1.0"}}
