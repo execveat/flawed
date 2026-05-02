@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Canonical, version-controlled pre-commit hook (FLAW-167).
+# Install with:  mise run install-hooks
+# Do NOT edit the copy in .git/hooks/ — edit THIS file and reinstall.
+#
+# This hook is a THIN CALLER. tools/quality.py is the single owner of the
+# quality gate (the check-set as data + all output handling). The hook delegates
+# the entire gate, scoped to the staged files, to one command. quality.py:
+#   - fast-paths docs/plan/markdown-only commits (no heavy work);
+#   - autofixes + re-stages staged Python (ruff lint+format) — ONE ruff engine;
+#   - runs the scoped correctness gate (mypy, layers, framework/runtime/subprocess
+#     checks, lockfile, testmon-affected tests) and owns its clean output.
+
+# Activate the mise environment so `uv run` resolves inside any worktree/clone.
+eval "$(mise activate bash --shims)"
+
+exec uv run python -m tools.quality --staged
