@@ -5,6 +5,7 @@ Pure guard/verification library.  Entirely declarative.
 
 from __future__ import annotations
 
+from typing import ClassVar
 
 from flawed._semantic.providers._base import (
     CheckKind,
@@ -24,24 +25,32 @@ class Argon2Provider(Provider):
         library_fqn="argon2",
     )
 
+    # -- FQN alias map ---------------------------------------------------
+    # ``PasswordHasher`` is defined in ``argon2._password_hasher`` but
+    # re-exported as ``argon2.PasswordHasher`` (what ``from argon2 import
+    # PasswordHasher`` and symbol resolution yield). Declare checks using the
+    # canonical public FQN and alias the internal module to it, so an instance
+    # whose receiver type resolves to either form canonicalizes identically.
+    fqn_aliases: ClassVar[dict[str, str]] = {"argon2._password_hasher": "argon2"}
+
     # -- Security checks -------------------------------------------------
 
     checks = (
         # High-level PasswordHasher API
         SecurityCheckPattern(
-            fqn="argon2._password_hasher.PasswordHasher.hash",
+            fqn="argon2.PasswordHasher.hash",
             kind=CheckKind.METHOD_CALL,
             category="PASSWORD_HASH",
             description="Hash password with Argon2 (id/i/d variants)",
         ),
         SecurityCheckPattern(
-            fqn="argon2._password_hasher.PasswordHasher.verify",
+            fqn="argon2.PasswordHasher.verify",
             kind=CheckKind.METHOD_CALL,
             category="PASSWORD_VERIFY",
             description="Verify password against Argon2 hash (raises on mismatch)",
         ),
         SecurityCheckPattern(
-            fqn="argon2._password_hasher.PasswordHasher.check_needs_rehash",
+            fqn="argon2.PasswordHasher.check_needs_rehash",
             kind=CheckKind.METHOD_CALL,
             category="PASSWORD_VERIFY",
             description="Check whether hash parameters are outdated",
@@ -71,7 +80,7 @@ class Argon2Provider(Provider):
 
     propagators = (
         FlowPropagatorPattern(
-            fqn="argon2._password_hasher.PasswordHasher.hash",
+            fqn="argon2.PasswordHasher.hash",
             input_arg=0,
             output="return",
             description="Password flows through hash to hash output",
