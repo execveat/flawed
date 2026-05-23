@@ -109,22 +109,18 @@ non-underscore module under `src/flawed/_semantic/providers/` is picked up and
 ordered by `meta.id` — no registry edit needed. Drop your module in, and it
 activates whenever its `library_fqn` is imported by the target.
 
-Verify it against a repository that uses the framework, straight from the
-[Python API](python-api.md):
+Verify it without writing a rule:
 
-```python
-from flawed import open_repo
-
-kb = open_repo("path/to/app")
-kb.routes                       # endpoints your route patterns recognized
-route = kb.routes.first()
-route.full_stack.checks()       # the guards your provider declared
-route.reachable.effects()       # the state effects it modelled
+```bash
+flawed providers list                 # confirm your provider is discovered
+flawed providers show flask-login     # per-category pattern breakdown
+flawed providers coverage TARGET      # did it activate on a real repo? what matched?
+flawed scan TARGET --provider flask-login   # force-enable while testing
 ```
 
-If the provider didn't activate, `kb.routes` comes back empty (or a
-`RoutelessRepoWarning` fires) — a missing analysis is surfaced, never silently
-returned.
+Provider enable/disable and per-provider settings are configurable under the
+`providers` key (see `flawed config show`); `--provider` / `--no-provider`
+override activation for a single scan.
 
 ## Principles
 

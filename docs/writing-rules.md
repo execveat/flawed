@@ -47,10 +47,11 @@ demos — read them as worked examples; they cover the main query surfaces.
 @detector(id, *, severity=Severity.INFO, description="...")
 ```
 
-- **`id`** — a stable rule id. Ids are separator-insensitive (`my-rule` ≡ `my_rule`); by convention the `@detector`
+- **`id`** — a stable rule id. Ids are separator-insensitive for
+  `--include`/`--exclude` (`my-rule` ≡ `my_rule`); by convention the `@detector`
   id uses hyphens and the filename uses underscores.
 - **`severity`** — a `Severity` (`INFO`, `LOW`, `MEDIUM`, `HIGH`, `CRITICAL`).
-- **`description`** — a one-line human-readable summary of the rule.
+- **`description`** — one line shown by `flawed explain` and `flawed rules`.
 
 A module is a rule **iff** it carries an `@detector`. Discovery is by decorator,
 not filename, so rule modules and plain helpers coexist in one directory.
@@ -317,8 +318,13 @@ lives in the type contracts under `src/flawed/`.
 
 ## Running your own rules
 
-The bundled rules are demos. flawed discovers rules from a directory you
-point it at; the discovery model is deliberately simple:
+The bundled rules are demos. Point the scanner at your own directory:
+
+```bash
+flawed scan TARGET --rules-dir /abs/path/to/myrules   # replaces the built-ins
+```
+
+The discovery model is deliberately simple:
 
 - A module is a rule **iff** it carries an `@detector` — helper modules with no
   detector are never mistaken for rules.
@@ -326,15 +332,18 @@ point it at; the discovery model is deliberately simple:
   packages with ordinary imports (no `sys.path` shim).
 - `_`-prefixed files and directories are **not** scanned for rules (but remain
   importable) — put shared helpers in a `_lib/` package.
-- If a configured rules directory is missing or has no rule files, the loader
-  **warns** — it never silently loads zero rules.
+- `--rules-dir` must be an absolute path. If a configured rules directory is
+  missing or has no rule files, the loader **warns** — it never silently loads
+  zero rules.
 
 ```
 myrules/
   _lib/                      # importable helpers, never scanned
     predicates.py
-  inputs_to_writes.py        # carries @detector -> a rule
+  inputs_to_writes.py        # carries @detector → a rule
 ```
+
+See [cli.md](cli.md) for the full scan workflow and output formats.
 
 ---
 
@@ -354,5 +363,6 @@ missing analysis is made explicit, not masked as a clean negative.
 - [analysis-model.md](analysis-model.md) — the model your rules query.
 - [python-api.md](python-api.md) — using the same API interactively in a REPL or
   script.
+- [cli.md](cli.md) — running scans, output formats, configuration.
 - [provider-authoring.md](provider-authoring.md) — teaching the engine a new
   framework so your rules see its routes, inputs, and effects.

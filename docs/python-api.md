@@ -1,6 +1,6 @@
 # Python API
 
-flawed's analysis is a Python library. The same objects a
+flawed's analysis is a Python library, not just a CLI. The same objects a
 detection rule receives are available interactively — open a repository, query
 its model, and trace how values flow. This is the fastest way to understand a
 codebase before writing a rule against it.
@@ -101,3 +101,30 @@ reverse and for provenance across transforms. Pair flow with `scope.conditions()
 to see whether a guard sits between a source and a sink.
 
 To read the underlying source for any route or function, call `.source()`.
+
+## Exploring findings
+
+The mirror image of model exploration: comb through the results of a scan that
+already ran. `load_findings(path)` reads a `--json` (or SARIF) capture and returns
+a `FindingCollection` — the same chainable substrate as the model collections,
+plus finding-specific filters:
+
+```python
+from flawed import load_findings, Severity
+
+findings = load_findings("scan.json")
+findings.count_by("rule_id").most_common(5)        # which rules fired most
+findings.min_severity("high").in_dir("auth/")       # high+ findings under auth/
+findings.by_rule("value-flow")                       # one rule's findings
+findings.with_gap()                                  # findings carrying an analysis gap
+findings[0].detail()                                 # full evidence chain of one
+
+# regression check: what did this branch add vs a baseline?
+findings.diff(load_findings("baseline.json")).added
+```
+
+Filters include `by_rule`, `by_severity`, `min_severity`, `in_file`, `in_dir`,
+`with_gap`, and `where`. `load_findings` fails closed: an unrecognized document,
+or a finding missing `rule_id` / `severity` / `fingerprint`, raises `ValueError`
+rather than yielding a silently-empty collection. The CLI equivalent is
+[`flawed explore`](cli.md#reviewing-results).

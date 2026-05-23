@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+repo_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
+
+# Guard against stale .venv with wrong Python version.
+if [[ -x "$repo_root/.venv/bin/python" ]]; then
+  required_python="$(cat "$repo_root/.python-version" 2>/dev/null || echo "${UV_PYTHON:-3.12}")"
+
+  if ! "$repo_root/.venv/bin/python" - "$required_python" <<'PY' >/dev/null 2>&1; then
+import sys
+want = tuple(int(part) for part in sys.argv[1].split(".")[:2])
+raise SystemExit(0 if sys.version_info[:2] == want else 1)
+PY
+    echo "[dev-flawed] stale .venv (wrong Python) — removing" >&2
+    rm -rf "$repo_root/.venv"
+  fi
+fi
+
+# Always run this checkout's live source. `uv run` ensures the venv exists and is
+# synced even if the editable console script is stale.
+exec uv run --project "$repo_root" flawed "$@"
