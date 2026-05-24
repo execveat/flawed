@@ -1,0 +1,10 @@
+[features]
+hooks = true
+
+[[hooks.PreToolUse]]
+matcher = "^Bash$"
+
+[[hooks.PreToolUse.hooks]]
+type = "command"
+command = ".codex/hooks/block-direct-pytest.sh"
+timeout = 5

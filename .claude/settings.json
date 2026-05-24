@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "deny": []
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/block-direct-pytest.sh",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "SessionStart": [],
+    "Stop": []
+  }
+}

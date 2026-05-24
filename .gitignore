@@ -30,6 +30,13 @@ venv/
 # OS
 .DS_Store
 
+# Local AI instructions / agent state
+CLAUDE.local.md
+AGENTS.override.md
+.claude/worktrees/
+.claude/scheduled_tasks.json
+.claude/scheduled_tasks.lock
+
 # Agent scratch, caches, results
 local/
 
