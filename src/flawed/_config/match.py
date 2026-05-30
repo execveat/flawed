@@ -12,6 +12,7 @@ Match semantics:
 
 from __future__ import annotations
 
+from dataclasses import replace
 from typing import TYPE_CHECKING
 
 from flawed._config.merge import _merge_provider_entry, _merge_rules, _merge_type_enrichment
@@ -137,17 +138,16 @@ def _apply_single(
             _type_enrichment_override_raw(block.type_enrichment),
         )
 
-    return ResolvedConfig(
-        data_dir=config.data_dir,
-        state_dir=config.state_dir,
-        repo_local=config.repo_local,
+    # Use ``dataclasses.replace`` so EVERY non-overridden field round-trips
+    # automatically. The previous hand-listed ``ResolvedConfig(...)`` silently
+    # dropped ``cache_invalidation`` and ``timeouts`` (resetting them to defaults
+    # on any override match) — FLAW-351. ``replace`` makes that defect class
+    # impossible and is future-proof as fields are added (e.g. observability_*).
+    return replace(
+        config,
         providers=providers,
         rules=rules,
         type_enrichment=type_enrichment,
-        meta_effects=config.meta_effects,
-        effect_routing=config.effect_routing,
-        groups=config.groups,
-        overrides=config.overrides,
     )
 
 
