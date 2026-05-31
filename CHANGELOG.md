@@ -4,6 +4,19 @@ All notable changes to flawed are documented here. The format is based on
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.7.1] - 2026-05-30
+
+### Fixed
+
+- Config override-merge no longer drops fields: applying a matching `overrides`
+  block previously reset `timeouts` and `cache_invalidation` to their defaults;
+  all sections now round-trip through override resolution.
+- `ResolvedConfig` data/state directories are XDG-aware, honouring
+  `$XDG_DATA_HOME`/`$XDG_STATE_HOME` rather than writing under the home directory.
+- Value-flow construction fails closed on a memory budget: a pathological graph
+  that could previously be OS-killed (a silent zero) now emits an honest
+  `VALUE_FLOW_INCOMPLETE` gap instead.
+
 ## [0.7.0] - 2026-05-23
 
 ### Added
@@ -56,5 +69,6 @@ Initial public release — flawed as a Python library.
   conservative (a negative means "not proven", never "provably safe").
 - Per-repository Layer 1 index caching, so repeat runs skip extraction.
 
+[0.7.1]: https://github.com/execveat/flawed/releases/tag/v0.7.1
 [0.7.0]: https://github.com/execveat/flawed/releases/tag/v0.7.0
 [0.6.0]: https://github.com/execveat/flawed/releases/tag/v0.6.0
