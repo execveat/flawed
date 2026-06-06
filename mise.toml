@@ -46,6 +46,10 @@ run = "bash -c 'uv run flawed \"$@\"' -- "
 description = "Auto-fix lint+format without the full gate (inner-loop convenience)."
 run = "bash -c 'uv run python -m tools.quality --format-only \"$@\"' -- "
 
+[tasks.release]
+description = "Cut a release (bump, re-lock, gate, tag, push, create GitHub Release). E.g. mise run release -- 0.7.2"
+run = "bash -c 'uv run python -m tools.release \"$@\"' -- "
+
 [tasks.repair-env]
 description = "Delete and recreate the uv environment"
 run = ["rm -rf .venv", "mise deps --force"]
