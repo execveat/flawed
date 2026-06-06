@@ -5,15 +5,16 @@ ROUTINE
     2. mise run release -- X.Y.Z
        Bumps pyproject version, re-locks uv.lock, runs the full quality gate,
        commits, tags vX.Y.Z, pushes main + tag, and creates the GitHub Release.
-    3. Approve the `pypi` deployment in the Actions run -> publishes to PyPI.
+    3. The publish workflow builds, re-checks tag == version + twine, and
+       publishes to PyPI automatically (no manual approval step).
 
 GUARDS (each aborts the release before anything irreversible)
     - on `main` and in sync with origin; no uncommitted changes except CHANGELOG.md
     - tag vX.Y.Z must not already exist
     - CHANGELOG.md must already contain the `## [X.Y.Z]` section (forces notes)
     - the full gate (`mise run check`) must pass
-    - CI re-checks tag == pyproject version before any PyPI upload, and the
-      `pypi` environment requires a manual approval click
+    - CI re-checks tag == pyproject version before any PyPI upload; the
+      deliberate release plus these guards are the safety net (no manual gate)
 
 RECOVERY
     PyPI versions are immutable. If a bad version ships, YANK it on PyPI

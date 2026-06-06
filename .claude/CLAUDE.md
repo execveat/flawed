@@ -195,6 +195,21 @@ The essentials:
   *specific* affected fixtures (seconds) and confirm green; *then* do the single
   full regen + a real-repo run. A green fixture is necessary, never sufficient.
 
+## Releasing
+
+A release is cut from one command and published to PyPI by
+`.github/workflows/publish.yml` (trusted publishing via OIDC — no tokens, no
+manual approval):
+
+1. Add a `## [X.Y.Z]` section to `CHANGELOG.md` describing the changes.
+2. `mise run release -- X.Y.Z` — bumps the version, re-locks `uv.lock`, runs the
+   full gate, commits, tags `vX.Y.Z`, pushes, and creates the GitHub Release. The
+   workflow then builds, re-checks the tag matches the version, and publishes.
+
+Don't hand-bump the version or create the tag — `tools/release.py` owns that.
+PyPI versions are immutable: to fix a bad release, yank it on PyPI and cut the
+next patch (never reuse a version).
+
 ## Where to Find Things
 
 | What | Where |
