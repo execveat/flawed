@@ -89,7 +89,7 @@ def main() -> None:
     others = [
         ln
         for ln in out("git", "status", "--porcelain").splitlines()
-        if ln[3:].strip() != "CHANGELOG.md"
+        if ln.split(maxsplit=1)[-1] != "CHANGELOG.md"
     ]
     if others:
         listing = "\n  ".join(others)
