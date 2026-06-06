@@ -4,6 +4,15 @@ All notable changes to flawed are documented here. The format is based on
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.7.2] - 2026-06-07
+
+### Added
+
+- Published to PyPI: install with `pip install flawed` (or `uv pip install flawed`).
+
+This release carries no functional changes from 0.7.1; it establishes automated
+PyPI publishing via GitHub Actions trusted publishing.
+
 ## [0.7.1] - 2026-05-30
 
 ### Fixed
@@ -69,6 +78,7 @@ Initial public release — flawed as a Python library.
   conservative (a negative means "not proven", never "provably safe").
 - Per-repository Layer 1 index caching, so repeat runs skip extraction.
 
+[0.7.2]: https://github.com/execveat/flawed/releases/tag/v0.7.2
 [0.7.1]: https://github.com/execveat/flawed/releases/tag/v0.7.1
 [0.7.0]: https://github.com/execveat/flawed/releases/tag/v0.7.0
 [0.6.0]: https://github.com/execveat/flawed/releases/tag/v0.6.0
