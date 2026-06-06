@@ -111,7 +111,7 @@ def main() -> None:
 
     # ---- mutate ----
     pp = PYPROJECT.read_text()
-    pp = re.sub(r'^version = "[^"]*"$', f'version = "{version}"', pp, count=1, flags=re.M)
+    pp = re.sub(r'^version = "[^"]*"$', f'version = "{version}"', pp, count=1, flags=re.MULTILINE)
     if f'version = "{version}"' not in pp:
         abort("could not set version in pyproject.toml")
     PYPROJECT.write_text(pp)
@@ -130,8 +130,8 @@ def main() -> None:
 
     print(
         f"\n✓ {tag} tagged, pushed, and released.\n"
-        "  Final step: open the Actions run and APPROVE the `pypi` deployment to publish.\n"
-        "  (Inspect the built artifacts there first — nothing reaches PyPI until you approve.)"
+        "  The publish workflow now builds and uploads to PyPI automatically.\n"
+        f"  Watch: gh run watch  |  verify: uvx --from flawed=={version} flawed version"
     )
 
 
